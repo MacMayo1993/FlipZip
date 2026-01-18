@@ -28,7 +28,9 @@ from .enhanced import (
     FlipZipEnhanced,
 )
 
-__version__ = "0.2.0"
+from . import entropy
+
+__version__ = "0.3.0"
 __author__ = "Mac Mayo"
 
 __all__ = [
@@ -47,4 +49,5 @@ __all__ = [
     'detect_seams_adaptive',
     'auto_select_detector',
     'FlipZipEnhanced',
+    'entropy',
 ]
