@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-01-18T02:15:35.114387",
+  "timestamp": "2026-01-18T02:24:00.674760",
   "quantization_bits": 10,
   "benchmarks": {
     "sine_cosine_switch": {
