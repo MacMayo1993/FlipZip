@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-01-17T15:57:58.792163",
+  "timestamp": "2026-01-18T02:29:44.058659",
   "signal_type": "synthetic_ecg",
   "n_samples": 108000,
   "fs": 360.0,
@@ -15,16 +15,16 @@
     "improvement_vs_lzma_pct": -48.10886861009019
   },
   "seam_detection": {
-    "n_seams": 0,
+    "n_seams": 193,
     "n_true_transitions": 2,
-    "n_detected": 0,
-    "detection_rate_pct": 0.0,
+    "n_detected": 2,
+    "detection_rate_pct": 100.0,
     "tau_mean": 0.14418330611638955,
     "tau_std": 0.0599249875542905
   },
   "summary": {
     "verdict": "FlipZip: -48.1% vs LZMA on synthetic ECG",
     "improvement_pct": -48.10886861009019,
-    "detection_rate_pct": 0.0
+    "detection_rate_pct": 100.0
   }
 }
