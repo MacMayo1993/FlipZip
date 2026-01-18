@@ -9,6 +9,7 @@ License: MIT
 
 import numpy as np
 from typing import Tuple, List, Optional
+from . import entropy
 
 
 def fast_walsh_hadamard(x: np.ndarray) -> np.ndarray:
@@ -325,33 +326,91 @@ class FlipZipCompressor:
         
         return np.array(reconstructed[:original_length])
     
-    def bits_per_sample(self, signal: np.ndarray) -> float:
+    def compress_to_bytes(self, signal: np.ndarray) -> bytes:
         """
-        Estimate bits per sample for the signal.
-        
-        This is a simplified estimate based on quantization + overhead.
-        Full implementation would use actual entropy coding.
+        Fully compress signal to binary bitstream with entropy coding.
+
+        This returns actual compressed bytes that can be written to disk.
+
+        Args:
+            signal: Input signal (1D numpy array)
+
+        Returns:
+            Compressed binary data
         """
         encoded = self.encode(signal)
-        
-        # Count bits
-        n_windows = len(encoded['windows'])
-        
-        # Quantized coefficients: quantization_bits per coefficient
-        coeff_bits = n_windows * self.window_size * self.quantization_bits
-        
-        # Min/max per window: 64 bits each (float64)
-        range_bits = n_windows * 2 * 64
-        
-        # Seam flags: 1 bit each
-        seam_bits = n_windows
-        
-        # Header overhead
-        header_bits = 64  # original_length, window_size, etc.
-        
-        total_bits = coeff_bits + range_bits + seam_bits + header_bits
-        
-        return total_bits / len(signal)
+        return entropy.encode_flipzip(encoded)
+
+    def decompress_from_bytes(self, data: bytes) -> np.ndarray:
+        """
+        Decompress signal from binary bitstream.
+
+        This is the inverse of compress_to_bytes(), providing full
+        round-trip compression/decompression capability.
+
+        Args:
+            data: Compressed binary data from compress_to_bytes()
+
+        Returns:
+            Reconstructed signal
+        """
+        encoded = entropy.decode_flipzip(data)
+        return self.decode(encoded)
+
+    def bits_per_sample(self, signal: np.ndarray, use_actual: bool = True) -> float:
+        """
+        Calculate bits per sample for the signal.
+
+        Args:
+            signal: Input signal
+            use_actual: If True, use actual entropy coding (default).
+                       If False, use theoretical estimate.
+
+        Returns:
+            Average bits per sample after compression
+        """
+        if use_actual:
+            # Actual compression with full entropy coding
+            encoded = self.encode(signal)
+            return entropy.get_bits_per_sample(signal, encoded)
+        else:
+            # Theoretical estimate (legacy)
+            encoded = self.encode(signal)
+
+            # Count bits
+            n_windows = len(encoded['windows'])
+
+            # Quantized coefficients: quantization_bits per coefficient
+            coeff_bits = n_windows * self.window_size * self.quantization_bits
+
+            # Min/max per window: 64 bits each (float64)
+            range_bits = n_windows * 2 * 64
+
+            # Seam flags: 1 bit each
+            seam_bits = n_windows
+
+            # Header overhead
+            header_bits = 64  # original_length, window_size, etc.
+
+            total_bits = coeff_bits + range_bits + seam_bits + header_bits
+
+            return total_bits / len(signal)
+
+    def compression_ratio(self, signal: np.ndarray, original_dtype=np.float64) -> float:
+        """
+        Calculate actual compression ratio.
+
+        Args:
+            signal: Input signal
+            original_dtype: Original data type (default: float64)
+
+        Returns:
+            Ratio of original size to compressed size (> 1.0 means compression achieved)
+        """
+        encoded = self.encode(signal)
+        compressed_bytes = entropy.get_compressed_size_bytes(encoded)
+        original_bytes = len(signal) * np.dtype(original_dtype).itemsize
+        return original_bytes / compressed_bytes
 
 
 # Convenience function for quick compression ratio estimation
