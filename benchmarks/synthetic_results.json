@@ -8,15 +8,18 @@
     "tau_func": "mad",
     "n_null_permutations": 100
   },
-  "timestamp": "2026-01-17T15:43:24.472960",
+  "timestamp": "2026-01-18T02:15:26.574072",
   "tests": {
     "sine_to_cosine": {
       "detection": {
         "detected": false,
-        "detection_error": null,
-        "closest_seam": null,
-        "n_seams_detected": 0,
-        "all_detected_seams": [],
+        "detection_error": 128,
+        "closest_seam": 128,
+        "n_seams_detected": 2,
+        "all_detected_seams": [
+          128,
+          448
+        ],
         "tau_at_transition": 0.125,
         "tau_mean": 0.11979166666666667,
         "tau_std": 0.012325166214790866,
@@ -40,9 +43,13 @@
         "detected": true,
         "detection_error": 0,
         "closest_seam": 256,
-        "n_seams_detected": 1,
+        "n_seams_detected": 5,
         "all_detected_seams": [
-          256
+          64,
+          160,
+          256,
+          384,
+          480
         ],
         "tau_at_transition": 0.125,
         "tau_mean": 0.121875,
@@ -67,8 +74,10 @@
         "detected": true,
         "detection_error": 32,
         "closest_seam": 288,
-        "n_seams_detected": 1,
+        "n_seams_detected": 3,
         "all_detected_seams": [
+          64,
+          160,
           288
         ],
         "tau_at_transition": 0.125,
@@ -91,11 +100,14 @@
     },
     "noise_switch": {
       "detection": {
-        "detected": false,
-        "detection_error": null,
-        "closest_seam": null,
-        "n_seams_detected": 0,
-        "all_detected_seams": [],
+        "detected": true,
+        "detection_error": 32,
+        "closest_seam": 224,
+        "n_seams_detected": 2,
+        "all_detected_seams": [
+          96,
+          224
+        ],
         "tau_at_transition": 0.015625,
         "tau_mean": 0.0125,
         "tau_std": 0.013010412496663331,
@@ -117,11 +129,13 @@
     "step_function": {
       "detection": {
         "detected": true,
-        "detection_error": 0,
-        "closest_seam": 256,
-        "n_seams_detected": 1,
+        "detection_error": 32,
+        "closest_seam": 224,
+        "n_seams_detected": 3,
         "all_detected_seams": [
-          256
+          96,
+          224,
+          384
         ],
         "tau_at_transition": 0.015625,
         "tau_mean": 0.023958333333333335,
@@ -143,8 +157,8 @@
     }
   },
   "summary": {
-    "detection_accuracy": 0.6,
-    "detection_successes": 3,
+    "detection_accuracy": 0.8,
+    "detection_successes": 4,
     "total_tests": 5,
     "average_compression_ratio": 5.271557271557271
   }

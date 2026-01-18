@@ -39,4 +39,12 @@ __all__ = [
     'detect_seams',
     'FlipZipCompressor',
     'estimate_compression_ratio',
+    'estimate_period_autocorr',
+    'compute_period_change',
+    'detect_seams_period',
+    'detect_seams_wavelet',
+    'detect_seams_wavelet_energy',
+    'detect_seams_adaptive',
+    'auto_select_detector',
+    'FlipZipEnhanced',
 ]

@@ -14,6 +14,17 @@ FlipZip is a compression algorithm designed for time series that exhibit regime-
 
 The core insight is that regime transitions manifest as sparsity discontinuities in Walsh-Hadamard Transform (WHT) coefficients. FlipZip detects these transitions and adapts its encoding accordingly.
 
+## Important Notice
+
+**This is a preliminary study with honest, reproducible benchmarks.** After identifying inflated claims in an earlier draft, this project was rebuilt from scratch with rigorous methodology:
+
+- **Real results**: ~5-7% compression improvement on regime-switching signals (not 15-22%)
+- **Real detection**: 57% average F1 with adaptive method (not 88%)
+- **Fair comparisons**: All methods use the same quantization level
+- **Clear limitations**: Documented what works and what doesn't
+
+FlipZip is a domain-specific tool that shows promise for certain signal types, not a universal compression improvement.
+
 ## Key Features
 
 - **Walsh-Hadamard Transform** basis for efficient frequency-like decomposition
@@ -48,6 +59,21 @@ print(f"Detected seams at: {seams}")
 # Estimate compression
 result = estimate_compression_ratio(signal)
 print(f"Compression ratio: {result['compression_ratio']:.2f}x")
+```
+
+### Enhanced Detection Methods
+
+```python
+from flipzip import FlipZipEnhanced, detect_seams_adaptive
+
+# Auto-select best detection method
+enhanced = FlipZipEnhanced(detection_method='auto')
+seams, method_used = enhanced.detect_seams(signal)
+print(f"Method: {method_used}, Seams: {seams}")
+
+# Or use adaptive consensus across multiple methods
+results, consensus_seams = detect_seams_adaptive(signal)
+print(f"Consensus seams: {consensus_seams}")
 ```
 
 ## Running Benchmarks
@@ -89,7 +115,12 @@ Results are saved to JSON files for reproducibility.
 | Pure sine | -10% (worse) |
 | Random walk | -18% (worse) |
 
-**Honest assessment:** FlipZip with enhanced detection shows promise for regime-switching use cases. The adaptive detector significantly improves seam detection accuracy compared to WHT-only approaches.
+**Honest assessment:** FlipZip shows modest but real improvements on specific signal types. This is a domain-specific tool, not a universal compression improvement over LZMA.
+
+**Important limitations:**
+- WHT sparsity (tau) alone fails on quasi-periodic signals (e.g., ECG) where rate changes don't alter sparsity patterns
+- Performance is worse than LZMA on structured/quasi-periodic signals
+- Current implementation uses estimated bits-per-sample (full entropy coding pending)
 
 ## Algorithm Overview
 
@@ -111,7 +142,17 @@ This is scale-invariant and robust to outliers.
 
 ### Seam Detection
 
-A seam (regime transition) is detected when τ exhibits a significant jump between adjacent windows. The algorithm uses sliding windows with 50% overlap.
+Multiple detection methods are available to address different signal types:
+
+1. **Tau (WHT sparsity)**: Original method - detects changes in WHT coefficient sparsity. Works well for structural changes.
+
+2. **Period tracking**: Uses autocorrelation to detect rate/frequency changes. Best for oscillatory signals where period changes (e.g., heart rate variability).
+
+3. **Wavelet detail**: Detects sharp transitions via spikes in wavelet coefficients. Excellent for abrupt changes (e.g., piecewise constant signals).
+
+4. **Adaptive method**: Combines multiple detectors with consensus voting. Best overall performance (57% avg F1).
+
+The enhanced methods were developed to address the limitation that WHT sparsity fails on quasi-periodic signals.
 
 ### Compression
 
